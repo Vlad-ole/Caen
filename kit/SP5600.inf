@@ -1,0 +1,42 @@
+[Version]                                                       ; Version section
+Signature="$Chicago$"                                           ; All Windows versions
+Class=Ports                                                     ; This is a serial port driver
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}                ; Associated GUID
+Provider=%CAEN%                                                 ; Driver is provided by CAEN
+DriverVer=12/20/2010,1.0.0.0                                    ; Driver version 1.0.0.0 published on 20 December 2010
+
+[DestinationDirs]                                               ; DestinationDirs section
+DefaultDestDir=12                                               ; Default install directory is \drivers or \IOSubSys
+
+[Manufacturer]                                                  ; Manufacturer section
+%CAEN%=CAENMfg                                                  ; Only one manufacturer (CAEN), models section is named
+
+[CAENMfg]                                                      ; Models section corresponding to ATMEL
+%USBtoSerialConverter%=USBtoSer.Install,USB\VID_21E1&PID_0004   ; Identifies a device with ATMEL Vendor ID (03EBh) and
+                                                                ; Product ID equal to 0004h. Corresponding Install section
+                                                                ; is named USBtoSer.Install
+
+[USBtoSer.Install]                                              ; Install section
+include=mdmcpq.inf
+CopyFiles=FakeModemCopyFileSection
+AddReg=USBtoSer.AddReg                                          ; Registry keys to add are listed in USBtoSer.AddReg
+
+[USBtoSer.AddReg]                                               ; AddReg section
+HKR,,DevLoader,,*ntkern                                         ;
+HKR,,NTMPDriver,,usbser.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+[USBtoSer.Install.Services]                                     ; Services section
+AddService=usbser,0x00000002,USBtoSer.AddService                ; Assign usbser as the PnP driver for the device
+
+[USBtoSer.AddService]                                           ; Service install section
+DisplayName=%USBSer%                                            ; Name of the serial driver
+ServiceType=1                                                   ; Service kernel driver
+StartType=3                                                     ; Driver is started by the PnP manager
+ErrorControl=1                                                  ; Warn about errors
+ServiceBinary=%12%\usbser.sys                                   ; Driver filename
+
+[Strings]                                                       ; Strings section
+ATMEL="CAEN SpA "                                               ; String value for the CAEN symbol
+USBtoSerialConverter="SP5600 USB to Serial Converter"           ; String value for the USBtoSerialConverter symbol
+USBSer="SP5600 USB Serial Driver"                                 ; String value for the USBSer symbol
